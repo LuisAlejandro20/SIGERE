@@ -14,5 +14,6 @@ namespace SIGERE.Models
         public int Telefono { get; set; }
         public string Estatus { get; set; }
         public DateTime FechaAlta { get; set; }
+        //
     }
 }
