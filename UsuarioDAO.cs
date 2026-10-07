@@ -68,6 +68,5 @@ namespace SIGERE.DataAccess
 
             return false;
         }
-        //
     }
 }
