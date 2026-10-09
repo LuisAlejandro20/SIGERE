@@ -4,7 +4,6 @@ namespace SIGERE.Models
 {
     public class Usuario
     {
-        // Propiedades mapeadas según la Vista Lógica de la Base de Datos
         public int IdUsuario { get; set; }
         public string Nombre { get; set; }
         public string NombreUsuario { get; set; }
@@ -14,6 +13,14 @@ namespace SIGERE.Models
         public int Telefono { get; set; }
         public string Estatus { get; set; }
         public DateTime FechaAlta { get; set; }
-        //
+
+        /// <summary>
+        /// INVARIANTE DE CLASE (Diseño por Contrato):
+        /// El estatus de un usuario siempre debe mantenerse en un estado válido.
+        /// </summary>
+        public bool EsInvarianteValido()
+        {
+            return Estatus == "Activo" || Estatus == "Inactivo";
+        }
     }
 }

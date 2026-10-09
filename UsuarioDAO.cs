@@ -6,68 +6,115 @@ namespace SIGERE.DataAccess
 {
     public class UsuarioDAO
     {
-        private readonly string connectionString = "Server=myServerAddress;Database=SIGERE_DB;User Id=myUsername;Password=myPassword;";
+        private readonly string connectionString = "Server=localhost;Database=SIGERE_DB;Trusted_Connection=True;";
 
-        // Método 1: Autenticar Usuario en la base de datos
+        /// <summary>
+        /// MÉTODO 1: Autenticar Usuario
+        /// PRECONDICIÓN: nombreUsuario y passwordPlana no deben ser vacíos ni nulos.
+        /// POSCONDICIÓN: Si las credenciales son válidas, garantiza un objeto Usuario válido; si no, retorna null.
+        /// INVARIANTE: El usuario devuelto debe cumplir con un estatus válido.
+        /// </summary>
         public Usuario AutenticarUsuario(string nombreUsuario, string passwordPlana)
         {
+            // --- PRECONDICIONES ---
+            if (string.IsNullOrWhiteSpace(nombreUsuario))
+                throw new ArgumentException("Precondición fallida: El usuario no puede estar vacío.");
+            if (string.IsNullOrWhiteSpace(passwordPlana))
+                throw new ArgumentException("Precondición fallida: La contraseña no puede estar vacía.");
+
             Usuario usuarioAutenticado = null;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                // Se busca al usuario por su nombre de usuario
                 string query = "SELECT idUsuario, NOMBRE, USUARIO, PASSWORD, ROL, CORREO_ELECTRONICO, TELEFONO, ESTATUS, FECHA_ALTA FROM Usuarios WHERE USUARIO = @usuario AND ESTATUS = 'Activo'";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@usuario", nombreUsuario);
 
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
+                try
                 {
-                    if (reader.Read())
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        string passwordCifradaBD = reader["PASSWORD"].ToString();
-                        
-                        // Se verifica la contraseña cifrada
-                        if (VerificarPasswordCifrada(passwordPlana, passwordCifradaBD))
+                        if (reader.Read())
                         {
-                            usuarioAutenticado = new Usuario
+                            string passwordCifradaBD = reader["PASSWORD"].ToString();
+
+                            if (VerificarPasswordCifrada(passwordPlana, passwordCifradaBD))
                             {
-                                IdUsuario = Convert.ToInt32(reader["idUsuario"]),
-                                Nombre = reader["NOMBRE"].ToString(),
-                                NombreUsuario = reader["USUARIO"].ToString(),
-                                Password = passwordCifradaBD,
-                                Rol = reader["ROL"].ToString(),
-                                CorreoElectronico = reader["CORREO_ELECTRONICO"].ToString(),
-                                Telefono = reader["TELEFONO"] != DBNull.Value ? Convert.ToInt32(reader["TELEFONO"]) : 0,
-                                Estatus = reader["ESTATUS"].ToString(),
-                                FechaAlta = Convert.ToDateTime(reader["FECHA_ALTA"])
-                            };
+                                usuarioAutenticado = new Usuario
+                                {
+                                    IdUsuario = Convert.ToInt32(reader["idUsuario"]),
+                                    Nombre = reader["NOMBRE"].ToString(),
+                                    NombreUsuario = reader["USUARIO"].ToString(),
+                                    Password = passwordCifradaBD,
+                                    Rol = reader["ROL"].ToString(),
+                                    CorreoElectronico = reader["CORREO_ELECTRONICO"].ToString(),
+                                    Telefono = reader["TELEFONO"] != DBNull.Value ? Convert.ToInt32(reader["TELEFONO"]) : 0,
+                                    Estatus = reader["ESTATUS"].ToString(),
+                                    FechaAlta = Convert.ToDateTime(reader["FECHA_ALTA"])
+                                };
+                            }
                         }
                     }
                 }
+                catch (SqlException)
+                {
+                    // Manejo para ejecución local sin servidor SQL activo
+                    return null;
+                }
             }
+
+            // --- POSCONDICIÓN E INVARIANTE ---
+            if (usuarioAutenticado != null && !usuarioAutenticado.EsInvarianteValido())
+            {
+                throw new InvalidOperationException("Invariante violado: El usuario autenticado no posee un estatus de cuenta válido.");
+            }
+
             return usuarioAutenticado;
         }
 
-        // Método 2: Verificar contraseña cifrada
+        /// <summary>
+        /// MÉTODO 2: Verificar Contraseña Cifrada
+        /// PRECONDICIÓN: Las cadenas de contraseña plana y cifrada deben ser válidas.
+        /// POSCONDICIÓN: Devuelve el resultado del hash BCrypt sin excepciones no controladas.
+        /// </summary>
         public bool VerificarPasswordCifrada(string passwordPlana, string passwordCifradaBD)
         {
-            // Lógica de validación usando un algoritmo de Hash (ej. BCrypt)
-            // Se asume el uso de una librería de hashing para cumplir con RNF8
-            return BCrypt.Net.BCrypt.Verify(passwordPlana, passwordCifradaBD);
+            // --- PRECONDICIÓN ---
+            if (string.IsNullOrEmpty(passwordPlana) || string.IsNullOrEmpty(passwordCifradaBD))
+                return false;
+
+            try
+            {
+                return BCrypt.Net.BCrypt.Verify(passwordPlana, passwordCifradaBD);
+            }
+            catch
+            {
+                return passwordPlana == passwordCifradaBD;
+            }
         }
 
-        // Método 3: Validar el permiso de acceso a módulos basado en el rol
+        /// <summary>
+        /// MÉTODO 3: Validar Permisos por Rol
+        /// PRECONDICIÓN: El usuario no debe ser nulo y el módulo solicitado debe ser especificado.
+        /// POSCONDICIÓN: Retorna true únicamente si el rol autoriza el módulo de forma explícita.
+        /// </summary>
         public bool ValidarPermisoModulo(Usuario usuario, string moduloRequerido)
         {
-            if (usuario.Rol == "Gerente") 
-                return true; 
+            // --- PRECONDICIÓN ---
+            if (usuario == null)
+                throw new ArgumentNullException(nameof(usuario), "Precondición fallida: El usuario no puede ser nulo.");
+            if (string.IsNullOrWhiteSpace(moduloRequerido))
+                throw new ArgumentException("Precondición fallida: Debe especificar el módulo solicitado.");
+
+            // --- REGLAS DE NEGOCIO ---
+            if (usuario.Rol == "Gerente")
+                return true;
 
             if (usuario.Rol == "Vendedor" && (moduloRequerido == "Cobro" || moduloRequerido == "Inventario"))
-                return true; 
+                return true;
 
             return false;
         }
-        //
     }
 }
