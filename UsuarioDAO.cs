@@ -6,27 +6,20 @@ namespace SIGERE.DataAccess
 {
     public class UsuarioDAO
     {
-        private readonly string connectionString = "Server=localhost;Database=SIGERE_DB;Trusted_Connection=True;";
+        private readonly string connectionString = "Server=DESKTOP-SKD3024;Database=SIGERE_DB;Trusted_Connection=True;TrustServerCertificate=True;";
 
-        /// <summary>
-        /// MÉTODO 1: Autenticar Usuario
-        /// PRECONDICIÓN: nombreUsuario y passwordPlana no deben ser vacíos ni nulos.
-        /// POSCONDICIÓN: Si las credenciales son válidas, garantiza un objeto Usuario válido; si no, retorna null.
-        /// INVARIANTE: El usuario devuelto debe cumplir con un estatus válido.
-        /// </summary>
         public Usuario AutenticarUsuario(string nombreUsuario, string passwordPlana)
         {
-            // --- PRECONDICIONES ---
             if (string.IsNullOrWhiteSpace(nombreUsuario))
-                throw new ArgumentException("Precondición fallida: El usuario no puede estar vacío.");
+                throw new ArgumentException("El campo nombre está vacío");
             if (string.IsNullOrWhiteSpace(passwordPlana))
-                throw new ArgumentException("Precondición fallida: La contraseña no puede estar vacía.");
+                throw new ArgumentException("El campo contraseña está vacío");
 
             Usuario usuarioAutenticado = null;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT idUsuario, NOMBRE, USUARIO, PASSWORD, ROL, CORREO_ELECTRONICO, TELEFONO, ESTATUS, FECHA_ALTA FROM Usuarios WHERE USUARIO = @usuario AND ESTATUS = 'Activo'";
+                string query = "SELECT idUsuario, NOMBRE, USUARIO, PASSWORD, ROL, CORREO_ELECTRONICO, TELEFONO, ESTATUS, FECHA_ALTA FROM Usuarios WHERE USUARIO = @usuario";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@usuario", nombreUsuario);
 
@@ -37,6 +30,12 @@ namespace SIGERE.DataAccess
                     {
                         if (reader.Read())
                         {
+                            string estatus = reader["ESTATUS"].ToString();
+                            if (estatus != "Activo")
+                            {
+                                throw new InvalidOperationException("Su cuenta se encuentra inactiva. Contacte al administrador.");
+                            }
+
                             string passwordCifradaBD = reader["PASSWORD"].ToString();
 
                             if (VerificarPasswordCifrada(passwordPlana, passwordCifradaBD))
@@ -50,7 +49,7 @@ namespace SIGERE.DataAccess
                                     Rol = reader["ROL"].ToString(),
                                     CorreoElectronico = reader["CORREO_ELECTRONICO"].ToString(),
                                     Telefono = reader["TELEFONO"] != DBNull.Value ? Convert.ToInt32(reader["TELEFONO"]) : 0,
-                                    Estatus = reader["ESTATUS"].ToString(),
+                                    Estatus = estatus,
                                     FechaAlta = Convert.ToDateTime(reader["FECHA_ALTA"])
                                 };
                             }
@@ -59,12 +58,10 @@ namespace SIGERE.DataAccess
                 }
                 catch (SqlException)
                 {
-                    // Manejo para ejecución local sin servidor SQL activo
                     return null;
                 }
             }
 
-            // --- POSCONDICIÓN E INVARIANTE ---
             if (usuarioAutenticado != null && !usuarioAutenticado.EsInvarianteValido())
             {
                 throw new InvalidOperationException("Invariante violado: El usuario autenticado no posee un estatus de cuenta válido.");
@@ -73,14 +70,8 @@ namespace SIGERE.DataAccess
             return usuarioAutenticado;
         }
 
-        /// <summary>
-        /// MÉTODO 2: Verificar Contraseña Cifrada
-        /// PRECONDICIÓN: Las cadenas de contraseña plana y cifrada deben ser válidas.
-        /// POSCONDICIÓN: Devuelve el resultado del hash BCrypt sin excepciones no controladas.
-        /// </summary>
         public bool VerificarPasswordCifrada(string passwordPlana, string passwordCifradaBD)
         {
-            // --- PRECONDICIÓN ---
             if (string.IsNullOrEmpty(passwordPlana) || string.IsNullOrEmpty(passwordCifradaBD))
                 return false;
 
@@ -94,20 +85,13 @@ namespace SIGERE.DataAccess
             }
         }
 
-        /// <summary>
-        /// MÉTODO 3: Validar Permisos por Rol
-        /// PRECONDICIÓN: El usuario no debe ser nulo y el módulo solicitado debe ser especificado.
-        /// POSCONDICIÓN: Retorna true únicamente si el rol autoriza el módulo de forma explícita.
-        /// </summary>
         public bool ValidarPermisoModulo(Usuario usuario, string moduloRequerido)
         {
-            // --- PRECONDICIÓN ---
             if (usuario == null)
                 throw new ArgumentNullException(nameof(usuario), "Precondición fallida: El usuario no puede ser nulo.");
             if (string.IsNullOrWhiteSpace(moduloRequerido))
                 throw new ArgumentException("Precondición fallida: Debe especificar el módulo solicitado.");
 
-            // --- REGLAS DE NEGOCIO ---
             if (usuario.Rol == "Gerente")
                 return true;
 
@@ -115,6 +99,70 @@ namespace SIGERE.DataAccess
                 return true;
 
             return false;
+        }
+
+        public bool ValidarTelefonoExistente(int telefono)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM Usuarios WHERE TELEFONO = @telefono";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@telefono", telefono);
+
+                try
+                {
+                    connection.Open();
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    return count > 0;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool ValidarCorreoExistente(string correo)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM Usuarios WHERE CORREO_ELECTRONICO = @correo";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@correo", correo);
+
+                try
+                {
+                    connection.Open();
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    return count > 0;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool ActualizarPasswordPorTelefono(int telefono, string nuevaPassword)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "UPDATE Usuarios SET PASSWORD = @nuevaPass WHERE TELEFONO = @telefono";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@nuevaPass", nuevaPassword);
+                command.Parameters.AddWithValue("@telefono", telefono);
+
+                try
+                {
+                    connection.Open();
+                    int filasAfectadas = command.ExecuteNonQuery();
+                    return filasAfectadas > 0;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
     }
 }

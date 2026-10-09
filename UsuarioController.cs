@@ -15,9 +15,13 @@ namespace SIGERE.Controllers
 
         public (bool Exito, string Mensaje, Usuario Usuario) IniciarSesion(string usuario, string password)
         {
-            if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(usuario))
             {
-                return (false, "Por favor ingrese usuario y contraseña.", null);
+                return (false, "El campo nombre está vacío", null);
+            }
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return (false, "El campo contraseña está vacío", null);
             }
 
             try
@@ -30,13 +34,58 @@ namespace SIGERE.Controllers
                 }
                 else
                 {
-                    return (false, "Usuario o contraseña incorrectos.", null);
+                    return (false, "Nombre o contraseña incorrectos", null);
                 }
+            }
+            catch (InvalidOperationException ex)
+            {
+                return (false, ex.Message, null);
             }
             catch (Exception ex)
             {
-                return (false, $"Error al autenticar: {ex.Message}", null);
+                return (false, ex.Message, null);
             }
+        }
+
+        public (bool Exito, string Mensaje) ValidarTelefonoRecuperacion(string telefonoTxt)
+        {
+            if (!int.TryParse(telefonoTxt, out int telefono) || !usuarioDAO.ValidarTelefonoExistente(telefono))
+            {
+                return (false, "Número de teléfono no reconocido");
+            }
+            return (true, "Número reconocido. Ingrese nueva contraseña.");
+        }
+
+        public (bool Exito, string Mensaje) ReestablecerPassword(string telefonoTxt, string pass1, string pass2)
+        {
+            if (string.IsNullOrWhiteSpace(pass1) || string.IsNullOrWhiteSpace(pass2) || pass1 != pass2)
+            {
+                return (false, "Las contraseñas no coinciden");
+            }
+
+            if (!int.TryParse(telefonoTxt, out int telefono))
+            {
+                return (false, "Número de teléfono no válido");
+            }
+
+            bool actualizada = usuarioDAO.ActualizarPasswordPorTelefono(telefono, pass1);
+            if (actualizada)
+            {
+                return (true, "Contraseña reestablecida con éxito");
+            }
+            else
+            {
+                return (false, "Error al actualizar la contraseña en la base de datos");
+            }
+        }
+
+        public (bool Exito, string Mensaje) EnviarCorreoVerificacion(string correo)
+        {
+            if (string.IsNullOrWhiteSpace(correo) || !usuarioDAO.ValidarCorreoExistente(correo))
+            {
+                return (false, "Correo electrónico no reconocido");
+            }
+            return (true, "Se ha enviado un correo de verificación");
         }
     }
 }
