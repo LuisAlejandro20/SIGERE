@@ -43,7 +43,7 @@ namespace SIGERE.Views
         private void InitializeComponent()
         {
             this.Text = "SIGERE - Punto de Venta (Login)";
-            this.Size = new Size(480, 360);
+            this.Size = new Size(720, 540);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -52,35 +52,35 @@ namespace SIGERE.Views
             lblTitulo = new Label
             {
                 Text = "SIGERE",
-                Font = new Font("Trebuchet MS", 18, FontStyle.Bold),
+                Font = new Font("Trebuchet MS", 26, FontStyle.Bold),
                 ForeColor = Color.FromArgb(0, 40, 85),
                 TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(440, 32),
-                Location = new Point(10, 15)
+                Size = new Size(680, 50),
+                Location = new Point(10, 20)
             };
 
             lblSubtitulo = new Label
             {
                 Text = "Electrónica Aranda",
-                Font = new Font("Segoe UI", 10.5f, FontStyle.Italic),
+                Font = new Font("Segoe UI", 15f, FontStyle.Italic),
                 ForeColor = Color.FromArgb(70, 90, 120),
                 TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(440, 22),
-                Location = new Point(10, 47)
+                Size = new Size(680, 35),
+                Location = new Point(10, 70)
             };
 
-            lblUsuario = new Label { Text = "Usuario:", Font = new Font("Segoe UI", 10), Location = new Point(40, 95), AutoSize = true };
-            txtUsuario = new TextBox { Location = new Point(170, 92), Size = new Size(240, 26), Font = new Font("Segoe UI", 10) };
+            lblUsuario = new Label { Text = "Usuario:", Font = new Font("Segoe UI", 14), Location = new Point(70, 145), AutoSize = true };
+            txtUsuario = new TextBox { Location = new Point(250, 140), Size = new Size(360, 38), Font = new Font("Segoe UI", 14) };
 
-            lblPassword = new Label { Text = "Contraseña:", Font = new Font("Segoe UI", 10), Location = new Point(40, 135), AutoSize = true };
-            txtPassword = new TextBox { Location = new Point(170, 132), Size = new Size(240, 26), Font = new Font("Segoe UI", 10), PasswordChar = '*' };
+            lblPassword = new Label { Text = "Contraseña:", Font = new Font("Segoe UI", 14), Location = new Point(70, 205), AutoSize = true };
+            txtPassword = new TextBox { Location = new Point(250, 200), Size = new Size(360, 38), Font = new Font("Segoe UI", 14) };
 
             btnIngresar = new Button
             {
                 Text = "Ingresar",
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                Location = new Point(170, 172),
-                Size = new Size(240, 36),
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Location = new Point(250, 260),
+                Size = new Size(360, 55),
                 BackColor = Color.FromArgb(0, 122, 204),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -92,32 +92,32 @@ namespace SIGERE.Views
             lblOlvidoPassword = new Label
             {
                 Text = "¿Olvidaste la contraseña?",
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Underline),
+                Font = new Font("Segoe UI", 13.5f, FontStyle.Underline),
                 ForeColor = Color.FromArgb(0, 102, 204),
                 Cursor = Cursors.Hand,
-                Location = new Point(170, 218),
+                Location = new Point(250, 330),
                 AutoSize = true
             };
             lblOlvidoPassword.Click += (s, e) => MostrarVistaTelefono();
 
             pnlTelefono = new Panel
             {
-                Location = new Point(10, 85),
-                Size = new Size(440, 170),
+                Location = new Point(15, 130),
+                Size = new Size(670, 260),
                 Visible = false,
                 BackColor = Color.Transparent,
                 BorderStyle = BorderStyle.None
             };
 
-            pnlTelefono.Controls.Add(new Label { Text = "Teléfono:", Font = new Font("Segoe UI", 10), Location = new Point(30, 12), AutoSize = true });
-            txtTelefono = new TextBox { Location = new Point(160, 9), Size = new Size(140, 26), Font = new Font("Segoe UI", 10) };
+            pnlTelefono.Controls.Add(new Label { Text = "Teléfono:", Font = new Font("Segoe UI", 14), Location = new Point(45, 18), AutoSize = true });
+            txtTelefono = new TextBox { Location = new Point(235, 14), Size = new Size(220, 38), Font = new Font("Segoe UI", 14) };
             
             btnValidarTel = new Button
             {
                 Text = "Validar",
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                Location = new Point(310, 7),
-                Size = new Size(90, 30),
+                Font = new Font("Segoe UI", 13.5f, FontStyle.Bold),
+                Location = new Point(470, 10),
+                Size = new Size(140, 45),
                 BackColor = Color.FromArgb(0, 122, 204),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -129,10 +129,10 @@ namespace SIGERE.Views
             lblOtroMetodo = new Label
             {
                 Text = "Elegir otro método",
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Underline),
+                Font = new Font("Segoe UI", 13.5f, FontStyle.Underline),
                 ForeColor = Color.FromArgb(0, 102, 204),
                 Cursor = Cursors.Hand,
-                Location = new Point(30, 46),
+                Location = new Point(45, 70),
                 AutoSize = true
             };
             lblOtroMetodo.Click += (s, e) => MostrarVistaCorreo();
@@ -143,24 +143,24 @@ namespace SIGERE.Views
 
             pnlCambiarPass = new Panel
             {
-                Location = new Point(20, 75),
-                Size = new Size(400, 90),
+                Location = new Point(30, 115),
+                Size = new Size(600, 135),
                 Visible = false,
                 BackColor = Color.Transparent,
                 BorderStyle = BorderStyle.None
             };
-            pnlCambiarPass.Controls.Add(new Label { Text = "Nueva contraseña:", Font = new Font("Segoe UI", 9.5f), Location = new Point(10, 8), AutoSize = true });
-            txtPass1 = new TextBox { Location = new Point(140, 5), Size = new Size(140, 26), Font = new Font("Segoe UI", 10), PasswordChar = '*' };
+            pnlCambiarPass.Controls.Add(new Label { Text = "Nueva contraseña:", Font = new Font("Segoe UI", 13.5f), Location = new Point(15, 12), AutoSize = true });
+            txtPass1 = new TextBox { Location = new Point(205, 8), Size = new Size(220, 38), Font = new Font("Segoe UI", 14) };
 
-            pnlCambiarPass.Controls.Add(new Label { Text = "Repetir contraseña:", Font = new Font("Segoe UI", 9.5f), Location = new Point(10, 45), AutoSize = true });
-            txtPass2 = new TextBox { Location = new Point(140, 42), Size = new Size(140, 26), Font = new Font("Segoe UI", 10), PasswordChar = '*' };
+            pnlCambiarPass.Controls.Add(new Label { Text = "Repetir contraseña:", Font = new Font("Segoe UI", 13.5f), Location = new Point(15, 68), AutoSize = true });
+            txtPass2 = new TextBox { Location = new Point(205, 64), Size = new Size(220, 38), Font = new Font("Segoe UI", 14) };
 
             btnCambiarPass = new Button
             {
                 Text = "Cambiar\ncontraseña",
-                Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
-                Location = new Point(290, 5),
-                Size = new Size(90, 63),
+                Font = new Font("Segoe UI", 12f, FontStyle.Bold),
+                Location = new Point(440, 8),
+                Size = new Size(140, 94),
                 BackColor = Color.FromArgb(0, 122, 204),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -176,22 +176,22 @@ namespace SIGERE.Views
 
             pnlCorreo = new Panel
             {
-                Location = new Point(10, 85),
-                Size = new Size(440, 140),
+                Location = new Point(15, 130),
+                Size = new Size(670, 210),
                 Visible = false,
                 BackColor = Color.Transparent,
                 BorderStyle = BorderStyle.None
             };
 
-            pnlCorreo.Controls.Add(new Label { Text = "Correo electrónico:", Font = new Font("Segoe UI", 10), Location = new Point(30, 15), AutoSize = true });
-            txtCorreo = new TextBox { Location = new Point(160, 12), Size = new Size(140, 26), Font = new Font("Segoe UI", 10) };
+            pnlCorreo.Controls.Add(new Label { Text = "Correo electrónico:", Font = new Font("Segoe UI", 14), Location = new Point(45, 22), AutoSize = true });
+            txtCorreo = new TextBox { Location = new Point(235, 18), Size = new Size(220, 38), Font = new Font("Segoe UI", 14) };
             
             btnEnviarCorreo = new Button
             {
                 Text = "Enviar",
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
-                Location = new Point(310, 10),
-                Size = new Size(90, 30),
+                Font = new Font("Segoe UI", 13.5f, FontStyle.Bold),
+                Location = new Point(470, 15),
+                Size = new Size(140, 45),
                 BackColor = Color.FromArgb(0, 122, 204),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -203,10 +203,10 @@ namespace SIGERE.Views
             lblVolverLogin = new Label
             {
                 Text = "Volver al inicio de sesión",
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Underline),
+                Font = new Font("Segoe UI", 13.5f, FontStyle.Underline),
                 ForeColor = Color.FromArgb(0, 102, 204),
                 Cursor = Cursors.Hand,
-                Location = new Point(30, 52),
+                Location = new Point(45, 80),
                 AutoSize = true
             };
             lblVolverLogin.Click += (s, e) => MostrarVistaLogin();
@@ -217,11 +217,11 @@ namespace SIGERE.Views
 
             lblMensaje = new Label
             {
-                Location = new Point(10, 270),
-                Size = new Size(440, 35),
+                Location = new Point(10, 415),
+                Size = new Size(680, 50),
                 TextAlign = ContentAlignment.MiddleCenter,
                 ForeColor = Color.Red,
-                Font = new Font("Segoe UI", 9.5f, FontStyle.Bold)
+                Font = new Font("Segoe UI", 13.5f, FontStyle.Bold)
             };
 
             this.Controls.Add(lblTitulo);
