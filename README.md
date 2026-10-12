@@ -24,7 +24,7 @@ El módulo principal de este avance es el login de usuario el cual se utilizara 
 6. Compilar y ejecutar el proyecto mediante la terminal con `dotnet run` o directamente desde tu entorno de desarrollo para abrir la ventana de login (`LoginForm.cs`).
 
 ## Integrantes del Equipo
-* **Jose Miguel Nuñez Garcia** 
+* ~~Jose Miguel Nuñez Garcia~~ Compañero ha abandonado el equipo
 * **Sebastian Nuño Melendrez** 
 * **Reyes Chávez Luis Alejandro**
 * **Ortega Coronado César David**
