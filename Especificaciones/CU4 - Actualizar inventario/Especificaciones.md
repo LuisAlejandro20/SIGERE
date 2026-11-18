@@ -26,7 +26,7 @@
 ## Criterios de aceptación (Given-When-Then)
 - **INV-01 (Camino feliz - Recepción completa):**
   - **Dado** una orden `Confirmada` con 10 unidades solicitadas de un producto
-  - **Когда / Cuando** el almacenista captura 10 unidades recibidas y confirma
+  - **Cuando** el almacenista captura 10 unidades recibidas y confirma
   - **Entonces** la existencia del producto aumenta en +10 y la orden cambia a estatus `Recibida`.
 
 - **INV-02 (Escenario alterno - Diferencia de cantidades):**
