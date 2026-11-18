@@ -28,7 +28,7 @@
 
 - **DIS-02 (Camino feliz - Búsqueda por nombre parcial):**
   - **Dado** que existen productos que contienen la cadena "Resistencia" en su nombre
-  - **Когда / Cuando** el usuario busca por parte del nombre
+  - **Cuando** el usuario busca por parte del nombre
   - **Entonces** el sistema lista todas las coincidencias correspondientes.
 
 - **DIS-03 (Escenario alterno - Producto no encontrado):**
