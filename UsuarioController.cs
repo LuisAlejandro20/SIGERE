@@ -53,9 +53,13 @@ namespace SIGERE.Controllers
         public Usuario IniciarSesion(string correo, string passwordPlano)
         {
             if (string.IsNullOrWhiteSpace(correo) || string.IsNullOrWhiteSpace(passwordPlano))
-                throw new ArgumentException("Debe ingresar correo y contraseña.");
-
-            return _usuarioDao.Autenticar(correo.Trim().ToLowerInvariant(), passwordPlano);
+            {
+                return new Usuario
+                {
+                    Exito = false,
+                    Mensaje = "Debe ingresar correo y contraseña"
+                };
+            }
         }
 
         public bool EditarUsuario(Usuario usuario, string nuevaPasswordPlano = null)
