@@ -60,6 +60,21 @@ namespace SIGERE.Controllers
                     Mensaje = "Debe ingresar correo y contraseña"
                 };
             }
+
+            var usuario = _usuarioDao.Autenticar(correo.Trim().ToLowerInvariant(), passwordPlano);
+
+            if (usuario == null)
+            {
+                return new Usuario
+                {
+                    Exito = false,
+                    Mensaje = "Correo o contraseña incorrectos"
+                };
+            }
+
+            usuario.Exito = true;
+            usuario.Mensaje = $"Bienvenido, {usuario.Nombre}";
+            return usuario;
         }
 
         public bool EditarUsuario(Usuario usuario, string nuevaPasswordPlano = null)
