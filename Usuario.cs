@@ -11,5 +11,8 @@ namespace SIGERE.Models
         public string Rol { get; set; }
         public bool Activo { get; set; } = true;
         public DateTime FechaCreacion { get; set; }
+
+        public bool Exito {get; set;}
+        public string Mensaje {get; set;}
     }
 }
